@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  streamlit-app:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+      # Add volume for Chrome data if needed
+      - ~/.cache/selenium:/root/.cache/selenium
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DISPLAY=:99
+    shm_size: '2gb'  # Increased shared memory for Chrome
+    restart: unless-stopped
