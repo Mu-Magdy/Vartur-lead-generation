@@ -2,7 +2,7 @@ import os
 import logging
 from openai import OpenAI
 from dotenv import load_dotenv
-
+import platform
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
@@ -51,26 +51,61 @@ except:
     current_path = '.'
 
 ######################################## Initialize Driver ########################################
-gecko_driver = 'driver/geckodriver.exe'
-def init_driver(gecko_driver='', load_images=True, is_headless=False):
 
+def init_driver(gecko_driver_dir='helper', load_images=True, is_headless=False):
+    """
+    Initialize the Firefox WebDriver with specified options.
+    
+    :param gecko_driver_dir: Path to the directory containing GeckoDriver binaries for different OSs.
+    :param load_images: Boolean to enable or disable image loading in the browser.
+    :param is_headless: Boolean to run the browser in headless mode.
+    :return: Configured WebDriver instance.
+    """
+    # Detect the OS
+    current_os = platform.system().lower()
+    logger.info(current_os)
+    # Determine the appropriate GeckoDriver executable
+    if current_os == "windows":
+        gecko_driver = os.path.join(gecko_driver_dir, "driver","windows", "geckodriver.exe")
+    elif current_os == "linux":
+        gecko_driver = os.path.join(gecko_driver_dir, "driver","linux", "geckodriver")
+    elif current_os == "darwin":  # macOS
+
+        gecko_driver = 'helper/driver/macos/geckodriver'
+
+
+    else:
+        raise OSError(f"Unsupported operating system: {current_os}")
+    logger.info("********************#############")
+
+    # Verify that the GeckoDriver file exists
+    if not os.path.exists(gecko_driver):
+        raise FileNotFoundError(f"GeckoDriver not found at {gecko_driver}")
+
+    # Adjust driver permissions (Linux/macOS)
+    if current_os in ["linux", "darwin"]:
+        
+        os.chmod(gecko_driver, 0o755)
+
+    # Configure Firefox options
     options = Options()
     options.set_preference('dom.ipc.plugins.enabled.libflashplayer.so', False)
     options.set_preference("media.volume_scale", "0.0")
     options.set_preference("dom.webnotifications.enabled", False)
-    
+
     user_agent = 'Mozilla/5.0 (X11; ; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0'
     options.set_preference("general.useragent.override", user_agent)
-    
+
     if not load_images:
         options.set_preference('permissions.default.image', 2)
     
     if is_headless:
         options.add_argument('--headless')
+    
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--disable-gpu')
-    
-    driver = webdriver.Firefox(service = Service(executable_path=os.path.join(current_path, 'driver', 'geckodriver.exe')),
-                            options=options)
-    
+
+    # Initialize the WebDriver
+    driver = webdriver.Firefox(service=Service(executable_path=gecko_driver), options=options)
+    logger.info(driver)
     return driver
