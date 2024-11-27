@@ -66,9 +66,9 @@ def init_driver(gecko_driver_dir='helper', load_images=True, is_headless=False):
     logger.info(current_os)
     # Determine the appropriate GeckoDriver executable
     if current_os == "windows":
-        gecko_driver = os.path.join(gecko_driver_dir, "driver","windows", "geckodriver.exe")
+        gecko_driver = 'helper/driver/windows/geckodriver.exe'
     elif current_os == "linux":
-        gecko_driver = os.path.join(gecko_driver_dir, "driver","linux", "geckodriver")
+        gecko_driver = 'helper/driver/linux/geckodriver'
     elif current_os == "darwin":  # macOS
 
         gecko_driver = 'helper/driver/macos/geckodriver'
