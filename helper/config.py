@@ -52,60 +52,59 @@ except:
 
 ######################################## Initialize Driver ########################################
 
-def init_driver(gecko_driver_dir='helper', load_images=True, is_headless=False):
+def init_driver(chrome_driver_dir='helper', load_images=True, is_headless=False):
     """
-    Initialize the Firefox WebDriver with specified options.
-    
-    :param gecko_driver_dir: Path to the directory containing GeckoDriver binaries for different OSs.
+    Initialize the Chrome WebDriver with specified options.
+
+    :param chrome_driver_dir: Path to the directory containing ChromeDriver binaries for different OSs.
     :param load_images: Boolean to enable or disable image loading in the browser.
     :param is_headless: Boolean to run the browser in headless mode.
     :return: Configured WebDriver instance.
     """
     # Detect the OS
     current_os = platform.system().lower()
-    logger.info(current_os)
-    # Determine the appropriate GeckoDriver executable
+    logger.info(f"Current OS detected: {current_os}")
+
+    # Determine the appropriate ChromeDriver executable
     if current_os == "windows":
-        gecko_driver = 'helper/driver/windows/geckodriver.exe'
+        chrome_driver = 'helper/driver/windows/chromedriver.exe'
     elif current_os == "linux":
-        gecko_driver = 'helper/driver/linux/geckodriver'
+        chrome_driver = 'helper/driver/linux/chromedriver'
     elif current_os == "darwin":  # macOS
-
-        gecko_driver = 'helper/driver/macos/geckodriver'
-
-
+        chrome_driver = 'helper/driver/macos/chromedriver'
     else:
         raise OSError(f"Unsupported operating system: {current_os}")
-    logger.info("********************#############")
 
-    # Verify that the GeckoDriver file exists
-    if not os.path.exists(gecko_driver):
-        raise FileNotFoundError(f"GeckoDriver not found at {gecko_driver}")
+    logger.info(f"ChromeDriver path: {chrome_driver}")
+
+    # Verify that the ChromeDriver file exists
+    if not os.path.exists(chrome_driver):
+        raise FileNotFoundError(f"ChromeDriver not found at {chrome_driver}")
 
     # Adjust driver permissions (Linux/macOS)
     if current_os in ["linux", "darwin"]:
-        
-        os.chmod(gecko_driver, 0o755)
+        os.chmod(chrome_driver, 0o755)
 
-    # Configure Firefox options
+    # Configure Chrome options
     options = Options()
-    options.set_preference('dom.ipc.plugins.enabled.libflashplayer.so', False)
-    options.set_preference("media.volume_scale", "0.0")
-    options.set_preference("dom.webnotifications.enabled", False)
-
-    user_agent = 'Mozilla/5.0 (X11; ; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0'
-    options.set_preference("general.useragent.override", user_agent)
+    options.add_argument("--disable-extensions")
+    options.add_argument("--disable-notifications")
+    options.add_argument("--disable-infobars")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-gpu")
 
     if not load_images:
-        options.set_preference('permissions.default.image', 2)
+        options.add_argument("--blink-settings=imagesEnabled=false")
     
     if is_headless:
-        options.add_argument('--headless')
-    
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--disable-gpu')
+        options.add_argument("--headless")
+
+    # Set a custom user agent
+    user_agent = 'Mozilla/5.0 (X11; ; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+    options.add_argument(f"user-agent={user_agent}")
 
     # Initialize the WebDriver
-    driver = webdriver.Firefox(service=Service(executable_path=gecko_driver), options=options)
-    logger.info(driver)
+    driver = webdriver.Chrome(service=Service(executable_path=chrome_driver), options=options)
+    logger.info("Chrome WebDriver initialized successfully")
     return driver

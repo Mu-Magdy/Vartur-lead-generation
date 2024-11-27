@@ -1,18 +1,21 @@
-chromium
-chromium-driver
-xvfb
-firefox                     # Installs Firefox browser
-libgtk-3-0                  # Required for Firefox GUI (GTK support)
-libdbus-glib-1-2            # DBus support for Firefox
-libxt6                      # X Toolkit Intrinsics for GUI applications
-libxrandr2                  # RandR support for screen resolution
-libxrender1                 # Rendering support
-libasound2                  # ALSA for sound (if needed)
-libpulse0                   # PulseAudio support (if needed)
-libnss3                     # NSS for secure communication
-libxcomposite1              # Composite extension library
-libxdamage1                 # Damage extension library
-libxfixes3                  # Fixes extension library
-libxi6                      # Input extension library
-libgl1                      # OpenGL support for rendering
-fonts-liberation            # Liberation fonts for better font rendering
+# Chrome dependencies
+wget
+libnss3
+libx11-6
+libx11-xcb1
+libxcomposite1
+libxcursor1
+libxdamage1
+libxi6
+libxtst6
+libxrandr2
+libasound2
+fonts-liberation
+libatk-bridge2.0-0
+libcups2
+libgdk-pixbuf2.0-0
+libpangocairo-1.0-0
+libgtk-3-0
+
+# Optional but recommended
+xdg-utils
