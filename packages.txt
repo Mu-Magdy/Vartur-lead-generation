@@ -1,4 +1,4 @@
-# Chrome dependencies
+
 wget
 libnss3
 libx11-6
@@ -17,5 +17,5 @@ libgdk-pixbuf2.0-0
 libpangocairo-1.0-0
 libgtk-3-0
 
-# Optional but recommended
+
 xdg-utils
