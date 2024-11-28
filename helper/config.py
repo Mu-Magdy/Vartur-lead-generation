@@ -6,6 +6,7 @@ import platform
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+import shutil
 # from selenium.webdriver.firefox.service import Service
 # from selenium.webdriver.firefox.options import Options
 
@@ -105,7 +106,8 @@ def init_driver(chrome_driver_dir='helper', load_images=True, is_headless=False)
     # Set a custom user agent
     user_agent = 'Mozilla/5.0 (X11; ; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
     options.add_argument(f"user-agent={user_agent}")
-    
+    chrome_path = shutil.which("google-chrome")  # Linux/Mac
+    logger.info(chrome_path)
     chrome_binary_path = "/usr/bin/google-chrome"  # Adjust this path based on your system
     options.binary_location = chrome_binary_path
     # Initialize the WebDriver
