@@ -105,7 +105,9 @@ def init_driver(chrome_driver_dir='helper', load_images=True, is_headless=False)
     # Set a custom user agent
     user_agent = 'Mozilla/5.0 (X11; ; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
     options.add_argument(f"user-agent={user_agent}")
-
+    
+    chrome_binary_path = "/usr/bin/google-chrome"  # Adjust this path based on your system
+    options.binary_location = chrome_binary_path
     # Initialize the WebDriver
     driver = webdriver.Chrome(service=Service(executable_path=chrome_driver), options=options)
     logger.info("Chrome WebDriver initialized successfully")
