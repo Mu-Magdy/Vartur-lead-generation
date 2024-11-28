@@ -7,5 +7,4 @@ streamlit==1.39.0
 xlsxwriter==3.2.0
 plotly==5.24.1
 nbformat==5.10.4
-undetected-chromedriver==3.5.5
 webdriver-manager==4.0.2

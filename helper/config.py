@@ -56,39 +56,6 @@ try:
 except:
     current_path = '.'
 
-
-
-def install_chrome():
-    """Install Google Chrome on the server."""
-    chrome_path = "/usr/bin/google-chrome"
-    if not os.path.exists(chrome_path):
-        # Download Google Chrome .deb package
-        subprocess.run(
-            [
-                "wget",
-                "-O",
-                "google-chrome-stable_current_amd64.deb",
-                "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb",
-            ],
-            check=True,
-        )
-        # Install the package using dpkg
-        subprocess.run(["sudo", "dpkg", "-i", "google-chrome-stable_current_amd64.deb"], check=True)
-        # Fix any missing dependencies
-        subprocess.run(["sudo", "apt-get", "-f", "install", "-y"], check=True)
-
-        # Verify installation
-        if os.path.exists(chrome_path):
-            print("Google Chrome installed successfully.")
-        else:
-            raise Exception("Google Chrome installation failed.")
-    else:
-        print("Google Chrome is already installed.")
-
-# Call the install_chrome function during app startup
-install_chrome()
-
-
 ######################################## Initialize Driver ########################################
 
 def init_driver(load_images=True, is_headless=False):
@@ -119,11 +86,18 @@ def init_driver(load_images=True, is_headless=False):
     options.add_argument(f"user-agent={user_agent}")
     options.binary_location='usr/bin/google-chrome'
     # Automatically manage ChromeDriver using WebDriverManager
-    driver = webdriver.Chrome(
-        service=Service(
-            ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install()
-        ),
+    # driver = webdriver.Chrome(
+    #     service=Service(
+    #         ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install()
+    #     ),
+    #     options=options
+    # )
+    
+    selenium_host = os.getenv('SELENIUM_HOST', 'localhost')
+    selenium_port = os.getenv('SELENIUM_PORT', '4444')
+    
+    driver = webdriver.Remote(
+        command_executor=f'http://{selenium_host}:{selenium_port}/wd/hub',
         options=options
     )
-
     return driver
