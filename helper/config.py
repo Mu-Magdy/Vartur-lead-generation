@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.os_manager import ChromeType
-
+import subprocess
 import shutil
 # from selenium.webdriver.firefox.service import Service
 # from selenium.webdriver.firefox.options import Options
@@ -56,72 +56,40 @@ try:
 except:
     current_path = '.'
 
+
+
+def install_chrome():
+    """Install Google Chrome on the server."""
+    chrome_path = "/usr/bin/google-chrome"
+    if not os.path.exists(chrome_path):
+        # Download Google Chrome .deb package
+        subprocess.run(
+            [
+                "wget",
+                "-O",
+                "google-chrome-stable_current_amd64.deb",
+                "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb",
+            ],
+            check=True,
+        )
+        # Install the package using dpkg
+        subprocess.run(["sudo", "dpkg", "-i", "google-chrome-stable_current_amd64.deb"], check=True)
+        # Fix any missing dependencies
+        subprocess.run(["sudo", "apt-get", "-f", "install", "-y"], check=True)
+
+        # Verify installation
+        if os.path.exists(chrome_path):
+            print("Google Chrome installed successfully.")
+        else:
+            raise Exception("Google Chrome installation failed.")
+    else:
+        print("Google Chrome is already installed.")
+
+# Call the install_chrome function during app startup
+install_chrome()
+
+
 ######################################## Initialize Driver ########################################
-
-# def init_driver(chrome_driver_dir='helper', load_images=True, is_headless=False):
-#     """
-#     Initialize the Chrome WebDriver with specified options.
-
-#     :param chrome_driver_dir: Path to the directory containing ChromeDriver binaries for different OSs.
-#     :param load_images: Boolean to enable or disable image loading in the browser.
-#     :param is_headless: Boolean to run the browser in headless mode.
-#     :return: Configured WebDriver instance.
-#     """
-#     # Detect the OS
-#     current_os = platform.system().lower()
-#     logger.info(f"Current OS detected: {current_os}")
-
-#     # Determine the appropriate ChromeDriver executable
-#     if current_os == "windows":
-#         chrome_driver = 'helper/driver/windows/chromedriver.exe'
-#     elif current_os == "linux":
-#         chrome_driver = 'helper/driver/linux/chromedriver'
-#     elif current_os == "darwin":  # macOS
-#         chrome_driver = 'helper/driver/macos/chromedriver'
-#     else:
-#         raise OSError(f"Unsupported operating system: {current_os}")
-
-
-#     # Verify that the ChromeDriver file exists
-#     if not os.path.exists(chrome_driver):
-#         raise FileNotFoundError(f"ChromeDriver not found at {chrome_driver}")
-
-#     # Adjust driver permissions (Linux/macOS)
-#     if current_os in ["linux", "darwin"]:
-#         os.chmod(chrome_driver, 0o755)
-
-#     # Configure Chrome options
-#     options = Options()
-#     options.add_argument("--disable-extensions")
-#     options.add_argument("--disable-notifications")
-#     options.add_argument("--disable-infobars")
-#     options.add_argument("--disable-dev-shm-usage")
-#     options.add_argument("--no-sandbox")
-#     options.add_argument("--disable-gpu")
-
-#     if not load_images:
-#         options.add_argument("--blink-settings=imagesEnabled=false")
-    
-#     if is_headless:
-#         options.add_argument("--headless")
-
-#     # Set a custom user agent
-#     user_agent = 'Mozilla/5.0 (X11; ; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
-#     options.add_argument(f"user-agent={user_agent}")
-    
-#     chrome_path = shutil.which("google-chrome")  # Linux/Mac
-#     logger.info()
-    
-#     chrome_binary_path = "/usr/bin/google-chrome"  # Adjust this path based on your system
-#     options.binary_location = chrome_binary_path
-    
-#     # Initialize the WebDriver
-#     driver = webdriver.Chrome(service=Service(executable_path=chrome_driver), options=options)
-#     logger.info(driver.capabilities['chrome']['binary'])
-
-#     logger.info("Chrome WebDriver initialized successfully")
-#     return driver
-
 
 def init_driver(load_images=True, is_headless=False):
     """
@@ -149,7 +117,7 @@ def init_driver(load_images=True, is_headless=False):
     # Set a custom user agent
     user_agent = 'Mozilla/5.0 (X11; ; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
     options.add_argument(f"user-agent={user_agent}")
-
+    options.binary_location='usr/bin/google-chrome'
     # Automatically manage ChromeDriver using WebDriverManager
     driver = webdriver.Chrome(
         service=Service(
