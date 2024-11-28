@@ -108,6 +108,7 @@ def init_driver(chrome_driver_dir='helper', load_images=True, is_headless=False)
     options.add_argument(f"user-agent={user_agent}")
     chrome_path = shutil.which("google-chrome")  # Linux/Mac
     logger.info(chrome_path)
+    logger.info(driver.capabilities['chrome']['binary'])
     chrome_binary_path = "/usr/bin/google-chrome"  # Adjust this path based on your system
     options.binary_location = chrome_binary_path
     # Initialize the WebDriver
